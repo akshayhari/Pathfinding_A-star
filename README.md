@@ -11,9 +11,10 @@ How to Run:
 - Press SPACEBAR after creating all the cells to draw the path
 
 Note:
+- Requires PyGame module.
 - Paths can be straight line as well as diagonal. 
 - This program is not written with coding standards. Only meant for beginner to intermediate level users.
-- Contains Global Variables which, I understand, are very bad :/ Always go for OOP whenever possible
+- Contains Global Variables which, I understand, are very bad :/ Go for OOP whenever possible
 - Might have some bugs. Haven't done any QA. Let me know if you find any.
 
 Inspired from A* Implementation by [jmarron7](https://github.com/jmarron7/a-star-pathfinding-visualizer)

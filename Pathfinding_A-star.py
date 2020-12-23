@@ -70,13 +70,14 @@ def get_grid_pos(pos, screen_size, block_size):
     col = x // block_size
     return row,col
 
-
 BLACK = (0 , 0, 0) 
 WHITE = (255, 255, 255) 
 RED = (255, 0 , 0) 
 GREEN = (0, 255, 0) 
 YELLOW = (255 , 255, 0)
-BLUE = (0, 0, 225) 
+BLUE = (77, 77, 225)
+LIGHT_BLUE = (200, 255, 255)
+GRAY = (220, 220, 220)
 #Drawing the matrix grid
 def draw(screen, grid, screen_size, block_size):
     for i in range(0, screen_size, block_size):
@@ -92,7 +93,10 @@ def draw(screen, grid, screen_size, block_size):
             elif grid[row][col] == '':
                 pygame.draw.rect(screen, WHITE, pygame.Rect(j, i, block_size, block_size))
             elif grid[row][col] == 'X':
-                pygame.draw.rect(screen, YELLOW, pygame.Rect(j, i, block_size, block_size))
+                pygame.draw.rect(screen, GREEN, pygame.Rect(j, i, block_size, block_size))
+            elif grid[row][col] == 'O':
+                pygame.draw.rect(screen, LIGHT_BLUE, pygame.Rect(j, i, block_size, block_size))
+
 #A* algorithm implementation
 def a_star(grid, start, end):
     possible_paths = [(0,1),(0,-1),(1,0),(-1,0),(1,-1),(1,1),(-1,-1),(-1,1)]
@@ -113,6 +117,7 @@ def a_star(grid, start, end):
         count+=1
         current=que.get()
         if [current[1],current[2]] == end:
+            grid[current[1]][current[2]]='D'
             draw_path(grid,visited,end)
             return True
         for i,j in possible_paths:
@@ -121,6 +126,7 @@ def a_star(grid, start, end):
             if grid[x][y] != 'B' and f_value[x][y] == float('inf') and  (f_value[x][y],x,y) not in record:
                 g_value[x][y] = g_value[current[1]][current[2]] + 1
                 f_value[x][y] = g_value[current[1]][current[2]] + manhattan((x,y),end) + 1
+                grid[x][y] = 'O'
                 que.put((f_value[x][y], x, y))
                 record.append((f_value[x][y], x, y))
                 visited[(x,y)] = (current[1],current[2])
@@ -136,7 +142,7 @@ def draw_path(grid, visited, end):
     while end in visited:
         x,y = end
         end = visited[end]
-        if grid[x][y] == '':
+        if grid[x][y] == '' or grid[x][y] == 'O':
             grid[x][y] = 'X'
         pygame.display.update()
 main()
