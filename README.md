@@ -13,8 +13,8 @@ How to Run:
 Note:
 - Requires PyGame module.
 - Paths can be straight line as well as diagonal. 
-- This program is not written with coding standards. Only meant for beginner to intermediate level users.
-- Contains Global Variables which, I understand, are very bad :/ Go for OOP whenever possible
+- Contains global variables which, I understand, are very bad and nasty. :/ 
+- This program is not written with coding standards. Beginner level.
 - Might have some bugs. Haven't done any QA. Let me know if you find any.
 
 Inspired from A* Implementation by [jmarron7](https://github.com/jmarron7/a-star-pathfinding-visualizer)
