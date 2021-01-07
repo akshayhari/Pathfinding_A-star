@@ -2,7 +2,7 @@ import pygame
 import pygame_menu
 from queue import PriorityQueue
 
-#window properties - block_size should be divisible by screen_size
+#window properties - screen_size should be divisible by block_size
 screen_size = 600
 pygame.init()
 screen = pygame.display.set_mode((screen_size, screen_size))
