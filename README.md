@@ -1,8 +1,10 @@
 # Pathfinding using A* Algorithm
 
 A mini-game visualization of A* Algorithm in Python 3 using PyGame.
+Requirement: Pygame, pygame-menu
 
-How to Run:
+#### Free Run
+
 - Clicking Left Mouse Button for the first time creates the starting grid.
 - Clicking Left Mouse Button for the second time creates the destination grid.
 - Clicking Left Mouse Button for the third time creates barrier grid.
@@ -16,5 +18,3 @@ Note:
 - Contains global variables which, I understand, are very bad and nasty. :/ 
 - This program is not written with coding standards. Beginner level.
 - Might have some bugs. Haven't done any QA. Let me know if you find any.
-
-Inspired from A* Implementation by [jmarron7](https://github.com/jmarron7/a-star-pathfinding-visualizer)

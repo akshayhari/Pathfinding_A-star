@@ -1,19 +1,33 @@
-#pip install pygame
 import pygame
+import pygame_menu
 from queue import PriorityQueue
+
 #window properties - block_size should be divisible by screen_size
 screen_size = 600
-block_size = 20
-#main function
+pygame.init()
+screen = pygame.display.set_mode((screen_size, screen_size))
+pygame.display.set_caption('Pathfinding using A* Algorithm')
+
 def main():
-    screen = pygame.display.set_mode((screen_size, screen_size))
-    pygame.display.set_caption('Pathfinding using A* Algorithm')
-    screen.fill(WHITE)
+    menu = pygame_menu.Menu(height=600,
+                        width=600,
+                        theme=pygame_menu.themes.THEME_BLUE,
+                        title='Pathfinder: A* Algorithm')
+    menu.add_button('Free Run', free_run)
+    menu.add_button('Google Map', gmap)
+    #menu.add_button('Middle-Earth', dummy)
+    menu.add_button('Quit', pygame_menu.events.EXIT)
+    menu.mainloop(screen)
+
+def dummy():
+    pass
+
+def free_run():
+    block_size = 20
     pygame.display.flip()
     grid = make_grid(screen_size,block_size)
     running = True
     start,end = [0,0],[0,0]
-
     while running:
         #Various events that may happen
         for event in pygame.event.get():
@@ -30,22 +44,20 @@ def main():
             #Left Click for adding start,end and obstacles
             if pygame.mouse.get_pressed()[0]:
                 pos = pygame.mouse.get_pos()
-                row,col=get_grid_pos(pos,screen_size,block_size)
-                if grid[start[0]][start[1]] == '' and grid[row][col] == '':
+                row,col=get_grid_pos(pos,block_size)
+                if grid[start[0]][start[1]] == 'V' and grid[row][col] == 'V':
                     start = [row,col]
                     grid[row][col] = 'S'
-                elif grid[end[0]][end[1]] == '' and grid[row][col] == '':
+                elif grid[end[0]][end[1]] == 'V' and grid[row][col] == 'V':
                     end=[row,col]
                     grid[row][col] = 'D'
-                elif grid[start[0]][start[1]] != '' and grid[end[0]][end[1]] != '' and grid[row][col] == '':
+                elif grid[start[0]][start[1]] != 'V' and grid[end[0]][end[1]] != 'V' and grid[row][col] == 'V':
                     grid[row][col] = 'B'
-            
             #Right click for deleting cell
             elif pygame.mouse.get_pressed()[2]:
                 pos = pygame.mouse.get_pos()
-                row,col = get_grid_pos(pos,screen_size,block_size)
-                grid[row][col] = ''
-          
+                row,col = get_grid_pos(pos,block_size)
+                grid[row][col] = 'V'
             #Space Bar for Starting the Path finding
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and start and end:
@@ -60,16 +72,16 @@ def make_grid(screen_size, block_size):
     for i in range(row):
         grid.append([])
         for j in range(row):
-            grid[i].append('')
+            grid[i].append('V')
     return grid
 
 #Mapping window position to grid position
-def get_grid_pos(pos, screen_size, block_size):
+def get_grid_pos(pos, block_size):
     x,y = pos
     row = y // block_size
     col = x // block_size
     return row,col
-
+    
 BLACK = (0 , 0, 0) 
 WHITE = (255, 255, 255) 
 RED = (255, 0 , 0) 
@@ -78,6 +90,7 @@ YELLOW = (255 , 255, 0)
 BLUE = (77, 77, 225)
 LIGHT_BLUE = (200, 255, 255)
 GRAY = (220, 220, 220)
+PINK = (249, 28, 234)
 #Drawing the matrix grid
 def draw(screen, grid, screen_size, block_size):
     for i in range(0, screen_size, block_size):
@@ -90,7 +103,7 @@ def draw(screen, grid, screen_size, block_size):
                 pygame.draw.rect(screen, BLUE, pygame.Rect(j, i, block_size, block_size))
             elif grid[row][col] == 'B':
                 pygame.draw.rect(screen, BLACK, pygame.Rect(j, i, block_size, block_size))
-            elif grid[row][col] == '':
+            elif grid[row][col] == 'V':
                 pygame.draw.rect(screen, WHITE, pygame.Rect(j, i, block_size, block_size))
             elif grid[row][col] == 'X':
                 pygame.draw.rect(screen, GREEN, pygame.Rect(j, i, block_size, block_size))
@@ -139,10 +152,80 @@ def manhattan(p1, end):
 
 def draw_path(grid, visited, end):
     end = tuple(end)
+    distance=0
     while end in visited:
+        distance+=1
         x,y = end
         end = visited[end]
-        if grid[x][y] == '' or grid[x][y] == 'O':
+        if grid[x][y] == 'V' or grid[x][y] == 'O':
             grid[x][y] = 'X'
         pygame.display.update()
+    print("The Distance is ",distance," units")
+
+def gmap():
+    block_size = 6
+    image_loc = r"map\\gmap_pta.jpg"
+    file_loc = r"map\\gmap_list.txt"
+    file = open(file_loc, "r")
+    grid = []
+    for line in file:
+        whole_line = line.strip()
+        letter = whole_line.split()
+        grid.append(letter)
+    file.close()
+    background = pygame.image.load(image_loc)
+    screen.blit(background,(0,0))
+    pygame.display.flip()
+    running = True
+    start,end = [0,0],[0,0]
+    while running:
+        #Various events that may happen
+        for event in pygame.event.get():
+            #For Exiting Window
+            if event.type == pygame.QUIT:
+                running = False
+            # Escape key for reseting 
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    start,end = [0,0],[0,0]
+                    grid = []
+                    file = open(file_loc, "r")
+                    for line in file:
+                        whole_line = line.strip()
+                        letter = whole_line.split()
+                        grid.append(letter)
+                    file.close()
+                    background = pygame.image.load(image_loc)
+                    screen.blit(background,(0,0))
+                    pygame.display.update()
+                    continue
+            if pygame.mouse.get_pressed()[0]:
+                pos = pygame.mouse.get_pos()
+                row,col=get_grid_pos(pos,block_size)
+                if grid[row][col] == 'V' and start == [0,0]:
+                    start = [row,col]
+                    grid[row][col] = 'S'
+                elif grid[row][col] == 'V' and end == [0,0]:
+                    end=[row,col]
+                    grid[row][col] = 'D'
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and start and end:
+                    a_star(grid,start,end)
+            draw_gmap(screen,grid,screen_size,block_size)
+            pygame.display.update()
+
+def draw_gmap(screen, grid, screen_size, block_size):
+    for i in range(0, screen_size, block_size):
+        for j in range(0, screen_size, block_size):
+            row = i//block_size
+            col = j//block_size
+            if grid[row][col] == 'S':
+                pygame.draw.rect(screen, PINK, pygame.Rect(j, i, block_size, block_size))
+            elif grid[row][col] == 'D':
+                pygame.draw.rect(screen, BLUE, pygame.Rect(j, i, block_size, block_size))
+            elif grid[row][col] == 'X':
+                pygame.draw.rect(screen, RED, pygame.Rect(j, i, block_size, block_size))
+            elif grid[row][col] == 'O':
+                pygame.draw.rect(screen, LIGHT_BLUE, pygame.Rect(j, i, block_size, block_size))
+#############
 main()
